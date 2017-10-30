@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.order.mapper.DistrictMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.order.domain.District" >
+    <id column="district_id" property="districtId" jdbcType="SMALLINT" />
+    <result column="pid" property="pid" jdbcType="SMALLINT" />
+    <result column="district_name" property="districtName" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="BIT" />
+    <result column="display" property="display" jdbcType="BIT" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Short" >
+    delete from district
+    where district_id = #{districtId,jdbcType=SMALLINT}
+  </delete>
+  <insert id="insert" parameterType="com.memory.shop.api.order.domain.District" >
+    insert into district (district_id, pid, district_name, 
+      level, display)
+    values (#{districtId,jdbcType=SMALLINT}, #{pid,jdbcType=SMALLINT}, #{districtName,jdbcType=VARCHAR}, 
+      #{level,jdbcType=BIT}, #{display,jdbcType=BIT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.memory.shop.api.order.domain.District" >
+    update district
+    set pid = #{pid,jdbcType=SMALLINT},
+      district_name = #{districtName,jdbcType=VARCHAR},
+      level = #{level,jdbcType=BIT},
+      display = #{display,jdbcType=BIT}
+    where district_id = #{districtId,jdbcType=SMALLINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Short" >
+    select district_id, pid, district_name, level, display
+    from district
+    where district_id = #{districtId,jdbcType=SMALLINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select district_id, pid, district_name, level, display
+    from district
+  </select>
+</mapper>

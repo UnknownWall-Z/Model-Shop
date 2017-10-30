@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.goods.mapper.ProductSkuPropertyMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.goods.domain.ProductSkuProperty" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="product_sku_id" property="productSkuId" jdbcType="BIGINT" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <association column="sku_property_id" property="skuProperty" columnPrefix="sp_"
+                 resultMap="com.memory.shop.server.goods.mapper.SkuPropertyMapper.smallMap" >
+    </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey">
+    delete from product_sku_property
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" >
+    insert into product_sku_property (product_sku_id, sku_property_id, value, 
+      image)
+    values (#{productSkuId,jdbcType=BIGINT}, #{skuProperty.id,jdbcType=BIGINT}, #{value,jdbcType=VARCHAR}, 
+      #{image,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey">
+    update product_sku_property
+    set product_sku_id = #{productSkuId,jdbcType=BIGINT},
+      sku_property_id = #{skuProperty.id,jdbcType=BIGINT},
+      value = #{value,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <sql id="base_column">
+     psp.id, psp.product_sku_id, psp.sku_property_id, psp.value, psp.image,
+	 sp.id sp_id, sp.name sp_name
+  </sql>
+  <sql id="base_table">
+     product_sku_property psp
+     JOIN sku_property sp ON sp.id = psp.sku_property_id
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+    where psp.id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+  </select>
+  
+  <select id="selectByProductSkuId" resultMap="BaseResultMap" >
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+    where psp.product_sku_id=#{productSkuId}
+  </select>
+
+  <select id="selectValuesByProductSkuId" resultType="string">
+    select value from product_sku_property where product_sku_id = #{id}
+  </select>
+</mapper>

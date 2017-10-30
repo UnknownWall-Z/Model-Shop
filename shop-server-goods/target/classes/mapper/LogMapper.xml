@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.goods.mapper.LogMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.goods.domain.Log" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="time" property="time" jdbcType="VARCHAR" />
+    <result column="date" property="date" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="delete">
+     delete from log
+  </delete>
+  <insert id="insert" parameterType="com.memory.shop.api.goods.domain.Log" useGeneratedKeys="true" keyProperty="id" >
+    insert into log (url, time, date
+      )
+    values (#{url,jdbcType=VARCHAR}, #{time,jdbcType=VARCHAR}, #{date,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.memory.shop.api.goods.domain.Log" >
+    update log
+    set url = #{url,jdbcType=VARCHAR},
+      time = #{time,jdbcType=VARCHAR},
+      date = #{date,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="base_column"/>
+    from log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, url, time, date
+    from log
+  </select>
+  <select id="count" resultType="java.lang.Integer">
+    select count(id)
+    from log
+    <include refid="base_where"/>
+  </select>
+  <select id="listData" resultMap="BaseResultMap">
+    select <include refid="base_column"/>
+    from log
+    <include refid="base_where"/>
+    LIMIT #{start},#{pageSize}
+  </select>
+  <select id="total" resultType="int">
+    SELECT count(id) FROM log
+  </select>
+  <sql id="base_column">id, url, time, date</sql>
+  <sql id="base_where">
+    <where>
+      <if test="keyword != null">
+        url LIKE concat("%",#{keyword},"%")
+      </if>
+    </where>
+  </sql>
+</mapper>

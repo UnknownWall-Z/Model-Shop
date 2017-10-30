@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.goods.mapper.SkuPropertyValueMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.goods.domain.SkuPropertyValue" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sku_property_id" property="skuPropertyId" jdbcType="BIGINT" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="sequence" property="sequence" jdbcType="INTEGER" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey">
+    delete from sku_property_value
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" >
+    insert into sku_property_value (sku_property_id, value, sequence
+      )
+    values (#{skuPropertyId,jdbcType=BIGINT}, #{value,jdbcType=VARCHAR}, #{sequence,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey">
+    update sku_property_value
+    set sku_property_id = #{skuPropertyId,jdbcType=BIGINT},
+      value = #{value,jdbcType=VARCHAR},
+      sequence = #{sequence,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select id, sku_property_id, value, sequence
+    from sku_property_value
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, sku_property_id, value, sequence
+    from sku_property_value
+  </select>
+  <select id="selectBySkuPropertyId" resultMap="BaseResultMap" >
+    select id, sku_property_id, value, sequence
+    from sku_property_value
+    where sku_property_id=#{skuPropertyId}
+  </select>
+
+  <delete id="deleteByPropertyId">
+    DELETE FROM sku_property_value
+    where sku_property_id=#{skuPropertyId}
+  </delete>
+</mapper>

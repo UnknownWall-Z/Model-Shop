@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.goods.mapper.ProductSkuMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.goods.domain.ProductSku" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+
+    <association column="product_id" property="product" javaType="com.memory.shop.api.goods.domain.Product" columnPrefix="p_">
+      <id column="id" property="id"/>
+      <result column="name" property="name"/>
+    </association>
+
+    <collection property="productSkuProperties" column="id" ofType="com.memory.shop.api.goods.domain.ProductSkuProperty"
+    select="com.memory.shop.server.goods.mapper.ProductSkuPropertyMapper.selectByProductSkuId"></collection>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey">
+    delete from product_sku
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" >
+    insert into product_sku (product_id, code, price
+      )
+    values (#{product.id,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL}
+      )
+  </insert>
+  <update id="updateByPrimaryKey">
+    update product_sku
+    set product_id = #{product.id,jdbcType=BIGINT},
+      code = #{code,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <sql id="base_column">
+       ps.id, ps.product_id, ps.code, ps.price,
+	   p.id p_id,p.name p_name
+  </sql>
+  <sql id="base_table">
+      product_sku ps
+      join product p on p.id=ps.product_id
+  </sql>
+  <sql id="base_where">
+
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+    where ps.id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+  </select>
+
+  <select id="selectByProductId" resultMap="BaseResultMap" >
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+    WHERE p.id=#{id}
+  </select>
+
+  <select id="selectBySkuCode" resultMap="BaseResultMap">
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+    where ps.code = #{code}
+  </select>
+
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.goods.mapper.ShoppingCarMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.goods.domain.ShoppingCar" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sku_id" property="skuId" jdbcType="BIGINT" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" />
+    <result column="sku_property" property="skuProperty" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="number" property="number" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from shopping_car
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" >
+    insert into shopping_car (sku_id, product_id, sku_property, 
+      product_name, number, price, user_id)
+    values (#{skuId,jdbcType=BIGINT}, #{productId,jdbcType=BIGINT}, #{skuProperty,jdbcType=VARCHAR}, 
+      #{productName,jdbcType=VARCHAR}, #{number,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL}, 
+      #{userId,jdbcType=BIGINT})
+  </insert>
+
+  <update id="updateByPrimaryKey" >
+    update shopping_car
+    set sku_id = #{skuId,jdbcType=BIGINT},
+      product_id = #{productId,jdbcType=BIGINT},
+      sku_property = #{skuProperty,jdbcType=VARCHAR},
+      product_name = #{productName,jdbcType=VARCHAR},
+      number = #{number,jdbcType=INTEGER},
+      price = #{price,jdbcType=DECIMAL},
+      user_id = #{userId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, sku_id, product_id, sku_property, product_name, number, price, user_id
+    from shopping_car
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByUserId" resultMap="BaseResultMap">
+    select id, sku_id, product_id, sku_property, product_name, number, price, user_id
+    from shopping_car
+    where user_id = #{id,jdbcType=BIGINT}
+  </select>
+
+</mapper>

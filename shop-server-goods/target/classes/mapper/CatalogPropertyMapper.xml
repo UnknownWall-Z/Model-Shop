@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.goods.mapper.CatalogPropertyMapper">
+    <resultMap id="BaseResultMap" type="com.memory.shop.api.goods.domain.CatalogProperty">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="catalog_id" property="catalog_id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="sequence" property="sequence" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <collection property="catalogPropertyValues" columnPrefix="cpv_" ofType="com.memory.shop.api.goods.domain.CatalogPropertyValue">
+            <id column="id" property="id" jdbcType="BIGINT"/>
+            <result column="value" property="value" jdbcType="VARCHAR"/>
+        </collection>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from catalog_property
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteByTwoId">
+    delete from catalog_property
+    where  catalog_id = #{catalogId} AND id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteByCatalogId">
+    delete from catalog_property
+    where catalog_id = #{catalogId}
+  </delete>
+
+  <insert id="insert" parameterType="com.memory.shop.api.goods.domain.CatalogProperty" useGeneratedKeys="true" keyProperty="id" >
+    insert into catalog_property (catalog_id, name, sequence, 
+      type)
+    values (#{catalog_id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{sequence,jdbcType=INTEGER}, 
+      #{type,jdbcType=TINYINT})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.memory.shop.api.goods.domain.CatalogProperty" >
+    update catalog_property
+    set catalog_id = #{catalog_id,jdbcType=BIGINT},
+      name = #{name,jdbcType=VARCHAR},
+      sequence = #{sequence,jdbcType=INTEGER},
+      type = #{type,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select cp.id, cp.catalog_id, cp.name, cp.sequence, cp.type
+        from catalog_property cp
+        where cp.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select cp.id, cp.catalog_id, cp.name, cp.sequence, cp.type
+        from catalog_property cp
+    </select>
+
+    <select id="getPropertyByCatalogId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM catalog_property cp
+            left join catalog_property_value cpv on cpv.catalog_property_id = cp.id
+        WHERE cp.catalog_id=#{catalogId}
+    </select>
+
+    <select id="getByTwoId" resultType="com.memory.shop.api.goods.domain.CatalogProperty">
+        select cp.id, cp.catalog_id, cp.name, cp.sequence, cp.type
+        from catalog_property cp
+        where cp.catalog_id = #{catalogId} AND cp.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="getIdsByCatalogId" resultType="long">
+        select id from catalog_property cp
+        where cp.catalog_id = #{catalogId}
+    </select>
+
+    <sql id="base_column">
+      cp.id, cp.catalog_id, cp.name, cp.sequence, cp.type,
+      cpv.id as cpv_id,cpv.value as cpv_value
+    </sql>
+</mapper>

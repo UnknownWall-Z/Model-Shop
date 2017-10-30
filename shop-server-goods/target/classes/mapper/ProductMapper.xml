@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.memory.shop.server.goods.mapper.ProductMapper">
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.goods.domain.Product">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="last_modified_date" jdbcType="TIMESTAMP" property="lastModifiedDate" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="keyword" jdbcType="VARCHAR" property="keyword" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="market_price" jdbcType="DECIMAL" property="marketPrice" />
+    <result column="base_price" jdbcType="DECIMAL" property="basePrice" />
+    <result column="mods" jdbcType="BIGINT" property="mods" />
+    <result column="impressions" jdbcType="VARCHAR" property="impressions" />
+
+    <association property="brand" javaType="com.memory.shop.api.goods.domain.Brand" columnPrefix="br_">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="chinese_name" jdbcType="VARCHAR" property="chineseName" />
+    </association>
+
+    <association property="catalog" javaType="com.memory.shop.api.goods.domain.Catalog" columnPrefix="ca_">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="name" jdbcType="VARCHAR" property="name" />
+    </association>
+
+  </resultMap>
+
+ <!-- <delete id="deleteByPrimaryKey">
+    delete from product
+    where id = #{id,jdbcType=BIGINT}
+  </delete>-->
+
+  <insert id="insert" keyProperty="id"  useGeneratedKeys="true">
+    insert into product
+    (created_date, last_modified_date,
+      version, catalog_id, brand_id, name, keyword, code,
+      image, market_price, base_price,  mods, impressions)
+    values (#{createdDate,jdbcType=TIMESTAMP}, #{lastModifiedDate,jdbcType=TIMESTAMP}, 
+      0, #{catalog.id}, #{brand.id},
+      #{name,jdbcType=VARCHAR}, #{keyword,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, 
+      #{image,jdbcType=VARCHAR}, #{marketPrice,jdbcType=DECIMAL}, #{basePrice,jdbcType=DECIMAL}, 
+      #{mods,jdbcType=BIGINT}, #{impressions,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey">
+    update product
+    set
+      last_modified_date = #{lastModifiedDate,jdbcType=TIMESTAMP},
+      version = version+1,
+      catalog_id = #{catalog.id,jdbcType=BIGINT},
+      brand_id = #{brand.id,jdbcType=BIGINT},
+      name = #{name,jdbcType=VARCHAR},
+      keyword = #{keyword,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      market_price = #{marketPrice,jdbcType=DECIMAL},
+      base_price = #{basePrice,jdbcType=DECIMAL},
+      mods = #{mods,jdbcType=BIGINT},
+      impressions = #{impressions,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <sql id="base_column">
+    p.id, p.created_date, p.last_modified_date, p.version, p.name,
+    p.keyword, p.code, p.image, p.market_price, p.base_price, p.mods, p.impressions,
+    br.id as br_id ,br.chinese_name as br_chinese_name ,
+    ca.id as ca_id ,ca.name as ca_name
+  </sql>
+  <sql id="base_table">
+    product p left join brand br on br.id = p.brand_id
+              left join catalog ca on ca.id = p.catalog_id
+  </sql>
+
+  <sql id="base_where">
+    <where>
+      <if test="keyword!=null and  keyword!=''">
+        p.keyword LIKE  concat("%",#{keyword},"%")
+      </if>
+    </where>
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+    where p.id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="queryForCount" resultType="int">
+    select count(p.id)
+    FROM <include refid="base_table"/>
+    <include refid="base_where"/>
+  </select>
+
+  <select id="queryForList" resultMap="BaseResultMap">
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+    <include refid="base_where"/>
+    LIMIT #{start},#{pageSize}
+  </select>
+
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.order.mapper.OrderActionMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.order.domain.OrderAction" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_status" property="orderStatus" jdbcType="TINYINT" />
+    <result column="shipping_status" property="shippingStatus" jdbcType="TINYINT" />
+    <result column="pay_status" property="payStatus" jdbcType="TINYINT" />
+    <result column="action_place" property="actionPlace" jdbcType="TINYINT" />
+    <result column="action_note" property="actionNote" jdbcType="VARCHAR" />
+    <result column="action_time" property="actionTime"/>
+    <association property="order" column="order_id" javaType="com.memory.shop.api.order.domain.OrderInfo" columnPrefix="oi_">
+      <id column="id" property="id"/>
+      <result column="order_status" property="orderStatus"/>
+    </association>
+    <association property="actionUser" column="action_user_id" javaType="com.memory.shop.api.order.domain.Users" columnPrefix="u_">
+      <id column="id" property="id"/>
+      <result property="nickName" column="nick_name"/>
+    </association>
+  </resultMap>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" >
+    insert into order_action (order_id, action_user_id, order_status,
+      shipping_status, pay_status, action_place, 
+      action_note, action_time)
+    values (#{order.id,jdbcType=BIGINT}, #{actionUser.id,jdbcType=BIGINT}, #{orderStatus,jdbcType=TINYINT},
+      #{shippingStatus,jdbcType=TINYINT}, #{payStatus,jdbcType=TINYINT}, #{actionPlace,jdbcType=TINYINT}, 
+      #{actionNote,jdbcType=VARCHAR}, #{actionTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey">
+    update order_action
+    set order_id = #{order.id,jdbcType=BIGINT},
+      action_user_id = #{actionUser.id,jdbcType=BIGINT},
+      order_status = #{orderStatus,jdbcType=TINYINT},
+      shipping_status = #{shippingStatus,jdbcType=TINYINT},
+      pay_status = #{payStatus,jdbcType=TINYINT},
+      action_place = #{actionPlace,jdbcType=TINYINT},
+      action_note = #{actionNote,jdbcType=VARCHAR},
+      action_time = #{actionTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select id, order_id, action_user_id, order_status, shipping_status, pay_status, action_place, 
+    action_note, action_time
+    from order_action
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <sql id="base_column">
+    oc.id,  oc.order_id, oc.action_user_id, oc.order_status, oc.shipping_status, oc.pay_status, oc.action_place,oc.action_note, oc.action_time,oi.id AS oi_id,oi.order_status AS oi_order_status,
+    u.nick_name AS u_nick_name
+  </sql>
+  <select id="queryByOrderId" resultMap="BaseResultMap">
+    SELECT <include refid="base_column"/>
+    from order_action oc
+    LEFT JOIN order_info oi ON (oc.order_id = oi.id)
+    LEFT JOIN users u ON (oc.action_user_id = u.id)
+    WHERE oc.order_id = #{order.id}
+  </select>
+</mapper>

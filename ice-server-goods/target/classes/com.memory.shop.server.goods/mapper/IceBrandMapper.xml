@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.memory.ice.server.goods.mapper.IceBrandMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.domain.IceBrand" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="chineseName" property="chineseName" jdbcType="VARCHAR" />
+    <result column="english" property="english" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
+    <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.memory.shop.server.goods.domain.IceBrand" useGeneratedKeys="true" keyProperty="id" >
+    insert into ice_brand (version, chineseName, english, 
+      url, logo, telephone, 
+      remark)
+    values (0, #{chineseName,jdbcType=VARCHAR}, #{english,jdbcType=VARCHAR},
+      #{url,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.memory.shop.server.goods.domain.IceBrand" >
+    update ice_brand
+    set version = version+1,
+      chineseName = #{chineseName,jdbcType=VARCHAR},
+      english = #{english,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      logo = #{logo,jdbcType=VARCHAR},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT} and version=#{version}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="base_column"/>
+    from ice_brand
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, version, chineseName, english, url, logo, telephone, remark
+    from ice_brand
+  </select>
+  <select id="count" resultType="java.lang.Integer">
+    select count(id)
+    FROM ice_brand
+    <include refid="base_where"/>
+  </select>
+  <select id="ListData" resultMap="BaseResultMap">
+    select <include refid="base_column"/>
+    FROM ice_brand
+    <include refid="base_where"/>
+  </select>
+  <sql id="base_column">id, version, chineseName, english, url, logo, telephone, remark</sql>
+  <sql id="base_where">
+    <where>
+    </where>
+  </sql>
+</mapper>

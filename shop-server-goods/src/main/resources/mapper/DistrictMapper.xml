@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.goods.mapper.DistrictMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.goods.domain.District" >
+    <id column="district_id" property="districtId" jdbcType="SMALLINT" />
+    <result column="pid" property="pid" jdbcType="SMALLINT" />
+    <result column="district_name" property="districtName" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="BIT" />
+    <result column="display" property="display" jdbcType="BIT" />
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Short" >
+    delete from district
+    where district_id = #{districtId,jdbcType=SMALLINT}
+  </delete>
+
+  <insert id="insert" >
+    insert into district (district_id, pid, district_name, level, display)
+    values (#{districtId,jdbcType=SMALLINT}, #{pid,jdbcType=SMALLINT}, #{districtName,jdbcType=VARCHAR}, 
+      #{level,jdbcType=BIT}, #{display,jdbcType=BIT})
+  </insert>
+
+  <update id="updateByPrimaryKey"  >
+    update district
+    set pid = #{pid,jdbcType=SMALLINT},
+      district_name = #{districtName,jdbcType=VARCHAR},
+      level = #{level,jdbcType=BIT},
+      display = #{display,jdbcType=BIT}
+    where district_id = #{districtId,jdbcType=SMALLINT}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select district_id, pid, district_name, level, display
+    from district
+    where district_id = #{districtId,jdbcType=SMALLINT}
+  </select>
+
+  <select id="selectFirst" resultType="java.util.Map">
+    select district_id,district_name from district where level = 1
+  </select>
+
+  <select id="selectSec" resultType="java.util.Map">
+    select district_id,district_name from district where level = 2
+  </select>
+
+  <select id="selectThird" resultType="java.util.Map">
+    select district_id,district_name from district where level = 3
+  </select>
+
+</mapper>

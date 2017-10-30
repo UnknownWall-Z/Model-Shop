@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.goods.mapper.CatalogPropertyValueMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.goods.domain.CatalogPropertyValue" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="sequence" property="sequence" jdbcType="INTEGER" />
+    <association property="catalogProperty" javaType="com.memory.shop.api.goods.domain.CatalogProperty" columnPrefix="cp_">
+      <id column="id" property="id"/>
+    </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from catalog_property_value
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByPropertyId">
+    delete from catalog_property_value
+    where catalog_property_id = #{id}
+  </delete>
+  <delete id="deleteByCatalogPropertyIds">
+    delete from catalog_property_value
+    where catalog_property_id in <foreach collection="ids" open="(" close=")" separator="," item="id">id</foreach>
+  </delete>
+    <insert id="insert" parameterType="com.memory.shop.api.goods.domain.CatalogPropertyValue" useGeneratedKeys="true" keyProperty="id" >
+    insert into catalog_property_value (catalog_property_id, value, sequence)
+    values (#{catalogProperty.id,jdbcType=BIGINT}, #{value,jdbcType=VARCHAR}, #{sequence,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.memory.shop.api.goods.domain.CatalogPropertyValue" >
+    update catalog_property_value
+    set catalog_property_id = #{catalogProperty.id,jdbcType=BIGINT},
+      value = #{value,jdbcType=VARCHAR},
+      sequence = #{sequence,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="base_column"/>
+    from catalog_property_value
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select <include refid="base_column"/>
+    from catalog_property_value
+  </select>
+  <select id="catalogPropertyValueListByCatalogId" resultMap="BaseResultMap">
+    SELECT <include refid="base_column"/>
+    FROM catalog_property_value
+    WHERE catalog_property_id=#{catalogPropertyId}
+  </select>
+  <sql id="base_column">id, catalog_property_id, value, sequence</sql>
+</mapper>

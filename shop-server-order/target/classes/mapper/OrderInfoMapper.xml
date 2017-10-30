@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.memory.shop.server.order.mapper.OrderInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.memory.shop.api.order.domain.OrderInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_sn" property="orderSn" jdbcType="VARCHAR" />
+    <result column="order_status" property="orderStatus" jdbcType="TINYINT" />
+    <result column="shipping_status" property="shippingStatus" jdbcType="TINYINT" />
+    <result column="pay_status" property="payStatus" jdbcType="TINYINT" />
+    <result column="consignee" property="consignee" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="district" property="district" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="zipcode" property="zipcode" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="order_amount" property="orderAmount" jdbcType="DECIMAL" />
+    <result column="orderDate" property="orderDate"/>
+    <result column="sendDate" property="sendDate"/>
+    <result column="finishDate" property="finishDate"/>
+    <association property="user" javaType="com.memory.shop.api.order.domain.Users" columnPrefix="u_">
+      <id property="id" column="id"/>
+      <result property="nickName" column="nick_name"/>
+    </association>
+  </resultMap>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" >
+    insert into order_info (order_sn, user_id, order_status, 
+      shipping_status, pay_status, consignee, 
+      , province, city, 
+      district, address, zipcode, 
+      mobile, order_amount, orderDate,sendDate,finishDate)
+    values (#{orderSn,jdbcType=VARCHAR}, #{user.id,jdbcType=BIGINT}, #{orderStatus,jdbcType=TINYINT},
+      #{shippingStatus,jdbcType=TINYINT}, #{payStatus,jdbcType=TINYINT}, #{consignee,jdbcType=VARCHAR}, 
+       #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
+      #{district,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{zipcode,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{orderAmount,jdbcType=DECIMAL},#{orderDate},#{sendDate},#{finishDate})
+  </insert>
+  <update id="updateByPrimaryKey">
+    update order_info
+    set order_sn = #{orderSn,jdbcType=VARCHAR},
+      user_id = #{user.id,jdbcType=BIGINT},
+      order_status = #{orderStatus,jdbcType=TINYINT},
+      shipping_status = #{shippingStatus,jdbcType=TINYINT},
+      pay_status = #{payStatus,jdbcType=TINYINT},
+      consignee = #{consignee,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      district = #{district,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      zipcode = #{zipcode,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      order_amount = #{orderAmount,jdbcType=DECIMAL},
+      orderDate = #{orderDate},
+      sendDate = #{sendDate},
+      finishDate = #{finishDate}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+    where oi.id = #{id,jdbcType=BIGINT}
+  </select>
+  <sql id="base_column">
+    oi.id, oi.order_sn, oi.order_status, oi.shipping_status, oi.pay_status, oi.consignee, 
+    oi.province, oi.city, oi.district, oi.address, oi.zipcode, oi.mobile, oi.order_amount, oi.orderDate,
+    oi.sendDate,oi.finishDate,
+    u.id as u_id,u.nick_name as u_nickName
+  </sql>
+  <sql id="base_table">
+    order_info oi left join users u on oi.user_id = u.id
+  </sql>
+  <sql id="base_where">
+    <where>
+      <if test="orderSn!=null and orderSn!=''">
+        and oi.order_sn like concat('%',#{orderSn},'%')
+      </if>
+      <if test="orderState!=-1">
+        and oi.order_status = #{orderState}
+      </if>
+      <if test="payState!=-1">
+        and oi.pay_status = #{payState}
+      </if>
+      <if test="shippingState!=-1">
+        and oi.shipping_status = #{shippingState}
+      </if>
+      <if test="beginDate!=null">
+        and oi.orderDate &gt;= #{beginDate}
+      </if>
+      <if test="endDate!=null">
+        and oi.orderDate &lt;= #{endDate}
+      </if>
+    </where>
+  </sql>
+  <select id="getTotalCount" resultType="int">
+    select count(oi.id)
+    from order_info oi
+    <include refid="base_where"/>
+  </select>
+
+  <select id="getListdata" resultMap="BaseResultMap">
+    select <include refid="base_column"/>
+    from <include refid="base_table"/>
+    <include refid="base_where"/>
+    limit #{beginIndex},#{pageSize}
+  </select>
+
+  <select id="getUserId" resultType="long">
+      SELECT user_id FROM order_info WHERE id=#{id}
+  </select>
+<!--  <select id="queryForOKOrder" resultMap="BaseResultMap">
+    SELECT <include refid="base_column"/>
+    FROM <include refid="base_table"/>
+    <include refid="base_where"/>
+
+  </select>-->
+</mapper>
